@@ -69,7 +69,7 @@ def ask_user_for_point_border() -> int:
         event, values = get_point_border()
         values : dict = values
         if event == "Cancel" or event == None:
-            return None, None, None, None
+            return None, None, None
         if values == None or "" in list(values.values()) and not values["auto"]:
             error_popup("No point border was selected and the automatic calculation was not selected")
         else:
