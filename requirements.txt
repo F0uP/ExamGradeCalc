@@ -1,1 +1,6 @@
 pandas
+numpy
+matplotlib
+aspose-words
+markdown2
+PySimpleGUI
