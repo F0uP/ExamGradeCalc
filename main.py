@@ -8,8 +8,10 @@ def main():
     print(parsed_data)
     print(type(parsed_data.iloc[0,0]))
     
-    calculator = Calculator(parsed_data)
+    calculator = Calculator(parsed_data, 50)
+    print(calculator.max_points, calculator.n_min)
     print(calculator.calc_average_points())
+    print(calculator.calc_person_grade(1))
     print(calculator.calc_all_persons_grade())
     
 main()
