@@ -1,5 +1,7 @@
 # ExamGradeCalc
 
+![](resources/logo.png)
+
 This program is designed to calculate german grade in university style (1.0,1.3,1.7,...) based on user input and data provided as a .csv file.
 
 ## Getting Started
