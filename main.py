@@ -29,6 +29,8 @@ def get_point_border():
               [r],
                 [sg.Checkbox('Calculate Border Automatically', default=False, key="auto")],
                 [sg.Checkbox('Border values are percentage values', default=False, key="percentage")],
+                [sg.Checkbox("Use Bonus Points (Last exercise in the csv file)", default=False, key="bonus")],
+                [sg.Checkbox("Bonus-Points still influence the grade if the person has not passed the exam", default=False, key="bonus_grade_influence")],
               [sg.Cancel(), sg.OK()]]
     window = sg.Window('ExamGradeCalc', layout, finalize=True, icon=os.path.join(RESOURCES, "icon.ico"))
     window.force_focus()
@@ -81,16 +83,16 @@ def ask_user_for_point_border() -> int:
         event, values = get_point_border()
         values : dict = values
         if event == "Cancel" or event == None:
-            return None, None, None
+            return None, None, None, None, None
         if values == None or "" in list(values.values()) and not values["auto"]:
             error_popup("No point border was selected and the automatic calculation was not selected")
         else:
             if values["auto"]:
-                return None, True, values["percentage"]
+                return None, True, values["percentage"], values["bonus"], values["bonus_grade_influence"]
             else:
                 try:
                     point_border = [float(x[1]) for x in values.items() if x[0][0] == "I"]
-                    return point_border, values["auto"], values["percentage"]
+                    return point_border, values["auto"], values["percentage"], values["bonus"], values["bonus_grade_influence"]
                 except ValueError:
                     error_popup("The point border must be a float/number")
                     continue
@@ -126,7 +128,7 @@ def main():
     else:
         file_path = values["file_path"]
         exam_name = values["exam_name"]
-    point_border, auto, percentage = ask_user_for_point_border()
+    point_border, auto, percentage, bonus, bonus_grade_influence = ask_user_for_point_border()
     if point_border == None and not auto:
         return
     if auto:
@@ -143,7 +145,7 @@ def main():
     # Call the csvparser module
     parsed_data = parser.csvparser.parse_csv(file_path=file_path)
     
-    calculator = Calculator(df=parsed_data, pass_percentage=pass_percentage, point_border=point_border, percentage_border=percentage)
+    calculator = Calculator(df=parsed_data, pass_percentage=pass_percentage, point_border=point_border, percentage_border=percentage, bonus_points=bonus, bonus_grade_influence=bonus_grade_influence)
     average_points = calculator.calc_average_points()
     grade_list = calculator.calc_all_persons_grade()
     
@@ -156,8 +158,7 @@ def main():
     path = os.sep.join(file_path)
     file_type = filename.split(".")[-1]
         
-    
-    gen = markdown_generator(df=parsed_data, path=path, grade_list=grade_list, exam_name=exam_name, name=filename)
+    gen = markdown_generator(df=parsed_data, path=path, grade_list=grade_list, exam_name=exam_name, name=filename, bonus_points=bonus, bonus_points_grades=calculator.bonus_grade_list if bonus else [])
     gen.write_points_with_grades()
     gen.write_averages(average_points)
     gen.write_point_border(calculator.point_border)
