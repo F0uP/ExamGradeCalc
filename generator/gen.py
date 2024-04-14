@@ -11,6 +11,8 @@ class markdown_generator():
         self.bonus_points_grades = bonus_points_grades
         self.grades = [5.0, 4.0, 3.7, 3.3, 3.0, 2.7, 2.3, 2.0, 1.7, 1.3, 1.0]
         self.grade_distro = self.get_grade_distro(self.parsed_grade_list)
+        if bonus_points:
+            self.bonus_grade_distro = self.get_grade_distro(self.bonus_points_grades)
         self.grade_list = grade_list
         os.chdir(path)
         self.df = df
@@ -70,6 +72,17 @@ class markdown_generator():
             out += (f"| {self.grades[i]} | {point_border[i]} | {self.grade_distro[i]} | {self.grade_distro[i] / all_students * 100}% |\n")
         out += "\n\n"
         self.str_out += out
+        
+        if self.bonus_points:
+            out = "### Point Border with Bonuspoints\n\n"
+            out += "| Grade | Points | Amount | Percentage |\n"
+            for i in range(4):
+                out += "| ---- "
+            out += "|\n"
+            for i in range(11):
+                out += (f"| {self.grades[i]} | {point_border[i]} | {self.bonus_grade_distro[i]} | {self.bonus_grade_distro[i] / all_students * 100}% |\n")
+            out += "\n\n"
+            self.str_out += out
     
     def write_grade_distro_graphic(self) -> None:
         out = "### Grade Distribution\n\n"
